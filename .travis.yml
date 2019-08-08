@@ -65,8 +65,7 @@ jobs:
       - cp -r .aws ~
 
       # install most current (released or unreleased) version of Sylph
-      - git clone https://github.com/mmcc007/sylph.git
-      - pub global activate --source path sylph
+      - (cd ~; git clone https://github.com/mmcc007/sylph.git; pub global activate --source path sylph)
 
       script:
       - sylph
