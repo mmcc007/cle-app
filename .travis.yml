@@ -50,17 +50,16 @@ jobs:
 #      - brew link --overwrite cocoapods
 
       # install pre-compiled flutter
+      - FLUTTER_HOME=~
       - FLUTTER_CHANNEL=stable
       - FLUTTER_VERSION=1.2.1-${FLUTTER_CHANNEL}
-      - wget --quiet --output-document=flutter.zip https://storage.googleapis.com/flutter_infra/releases/${FLUTTER_CHANNEL}/macos/flutter_macos_v${FLUTTER_VERSION}.zip && unzip -qq flutter.zip > /dev/null && rm flutter.zip
+      - wget --quiet --output-document=flutter.zip https://storage.googleapis.com/flutter_infra/releases/${FLUTTER_CHANNEL}/macos/flutter_macos_v${FLUTTER_VERSION}.zip && unzip -qq flutter.zip -d ${FLUTTER_HOME}> /dev/null && rm flutter.zip
       - export PATH="$PATH":"$HOME/.pub-cache/bin"
-      - export PATH=$PWD/flutter/bin:$PWD/flutter/bin/cache/dart-sdk/bin:$PATH
+      - export PATH=${FLUTTER_HOME}/flutter/bin:${FLUTTER_HOME}/flutter/bin/cache/dart-sdk/bin:$PATH
       - flutter doctor -v
 
       # install aws
-      - curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"
-      - unzip awscli-bundle.zip
-      - sudo ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
+      - (cd ~; curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"; unzip awscli-bundle.zip; sudo ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws)
       - aws --version
       - cp -r .aws ~
 
@@ -68,7 +67,8 @@ jobs:
       - (cd ~; git clone https://github.com/mmcc007/sylph.git; pub global activate --source path sylph)
 
       script:
-      - sylph
+        - ls -la
+        - sylph
 
       # publish artifacts to GitHub
       before_deploy:
@@ -78,7 +78,7 @@ jobs:
         provider: releases
         skip_cleanup: true
         api_key:
-          secure: OCyFLrBnorKGT3g7uf0BClF85lb+d6KDcvAvZvEiAec4P1GoaYoxz7iXAYEQ7rLBp1QYu94sW6diM2vd4g9V3NAGQAMzFLdVYkIyueHXE+PW4Z4i5SFm8d8VSTck1SCN4gBtd1j3pKbFCMH8637lrZ24uz46f4Gk4qlQ1PVbfkSIFm/eKTtFzRQO4XCOiMj+sHd/M72+jhfzDhwXAi7cG6Qf+cPpvAGLK7mZvsjg6UBrYltn7sOhG6P8XO927GXz/N8VutHvz6Ip0c0yNXpjoMiNub2YMzAxNmnxurabxDhZubtEqwn5bwohOce6mxqC3z6MH5Xq8RUW7BpmpFakHw+usFp1tTQ3QSBeVblZTX++wOzEnvF9vGh0IhMDr8iJBYFGjQtpJyW2Iz0EaU5W64Qh/FxCjgpyqN2hOQY43wLxnK3vpoBiqKOV+ZscXEgyJF0pfnMbFjahU/b/mbGbu6EmQvkWFxN5xnPH0qQ0u2yIlvDydgzWmX3nEjuYTBVFn3eEfQAfjZOEP9bmo3cK4ObyQSaqQAVJPS+ZCkGRlF7WPzJtWQX6kl9wNSAG94dq6MQ8dl/7NrIr1JXNxwcTb/q8CuYEpq6ZrbMlaFCFvgdFdpKqZCoCkD284wnyUUQUDLM3O6Tr2nYNTLHVGriPhcRSjdCVvZYDWo4wx1WYbAY=
+          secure: KzdPAQ9x5/WH8U2ICzVOlSNu0YThzERM4598n3p1YJgxtl5O4/rBsoIOktOMgy/u2drUnnOhqnTXc9NDDxfCBnVZ+JYT7vzjqxuFmOio2TgJbGAAmxM8fTt92m+xQ6hf24BUZTSDBQ3I0R+pr3Zx6D1Vi9sjvK6gNgGtR+A1G8/R+THECrXWWdWQLpGEuJ9cXFBvD1eeOZXNvrl2xmfBjMKF4HExAsxVmHjD8D6nUX8TN0QysZUP2LF02BdPDXvVt+dKMEU1DYIXi2bAVquSr86M2oTFSTMnJAhs1hBQZFWRn8G1NEitpW4Dnd0522MguVhds5bKHkaKBAd8ENJmOxhZ7ce77lV+veqGns/EN5776dpmmHzoMXgdFDDmIQYsaZNL4DSHYbL68Hkg2LcKSIS6GN+Fa1isu2lTvl11jkaHHeg4yrJ54xMByM45MiJ+3Wr293DJluIHL6fPvQvzR5zNMfhOZ0M9JqF5l6/4KupYyxByRmy5Cl3IpsvXFf4WhIZbgDI1dOZxzXYQ/xMcm9f9Jm8kPIy4gFzEZNcdfvtQ74zzUsmXjUz2/4qImimqens9XLXMeRCN+3I125xl9PlxGJfDVCJqNj3RX6QvmljjHHs7XyvUoHw2WhsfzLTusmzncIE44pXdsVQEpFsPBl/hi4RO/wh3sgw8z5Br/G0=
         file: /tmp/sylph_artifacts.zip
         on:
           tags: true
